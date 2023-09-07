@@ -47,6 +47,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
 
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        
+        if let url = URLContexts.first?.url {
+            print("url: \(url)")
+            
+            let urlString = url.absoluteString
+            let component = urlString.components(separatedBy: "=")
+            
+            print("component: \(component)")
+            
+            if component.count > 1, let product = component.last {
+                print("product: \(product)")
+                
+                navigateToDetailVC()
+            }
+        }
+    }
+    
+    func navigateToDetailVC() {
+        let storyBoard = UIStoryboard.init(name: "Main", bundle: nil)
+        
+        guard let detailPage = storyBoard.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController else { return }
+        
+        let navVC = self.window?.rootViewController as? UINavigationController
+        
+        navVC?.pushViewController(detailPage, animated: true)
+    }
 
 }
 
