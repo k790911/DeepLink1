@@ -17,6 +17,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
+        
+        // 메모리에 본 앱이 상주하지 않을 시 Detail View에 접근하는 방법
+        if let url = connectionOptions.urlContexts.first?.url {
+            openDetailVC(url: url)
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -50,30 +55,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         
+        // 메모리에 본 앱이 상주할 시 Detail View에 접근하는 방법
         if let url = URLContexts.first?.url {
-            print("url: \(url)")
-            
-            let urlString = url.absoluteString
-            let component = urlString.components(separatedBy: "=")
-            
-            print("component: \(component)")
-            
-            if component.count > 1, let product = component.last {
-                print("product: \(product)")
-                
-                navigateToDetailVC()
-            }
+            openDetailVC(url: url)
         }
     }
     
-    func navigateToDetailVC() {
-        let storyBoard = UIStoryboard.init(name: "Main", bundle: nil)
+    func openDetailVC(url: URL) {
+        let urlString = url.absoluteString
+        let component = urlString.components(separatedBy: "=")
         
-        guard let detailPage = storyBoard.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController else { return }
+        print("component: \(component)")
         
-        let navVC = self.window?.rootViewController as? UINavigationController
-        
-        navVC?.pushViewController(detailPage, animated: true)
+        if component.count > 1, let product = component.last {
+            print("product: \(product)")
+            
+            // navigate To Detail View Controller
+            let storyBoard = UIStoryboard.init(name: "Main", bundle: nil)
+            
+            guard let detailPage = storyBoard.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController else { return }
+            
+            let navVC = self.window?.rootViewController as? UINavigationController
+            
+            navVC?.pushViewController(detailPage, animated: true)
+        }
     }
 
 }
